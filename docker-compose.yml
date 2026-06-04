@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: qisur_postgres
+    environment:
+      POSTGRES_USER: qisur
+      POSTGRES_PASSWORD: qisur
+      POSTGRES_DB: qisur_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qisur -d qisur_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - qisur_network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qisur_app
+    environment:
+      DATABASE_URL: postgres://qisur:qisur@postgres:5432/qisur_db
+      JWT_SECRET: change-me-in-production
+      JWT_EXPIRATION_HOURS: 24
+      PORT: 8080
+      SEED: "false"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - qisur_network
+
+volumes:
+  postgres_data:
+
+networks:
+  qisur_network:
+    driver: bridge
