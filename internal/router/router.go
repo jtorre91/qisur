@@ -10,9 +10,11 @@ import (
 func New(pool *pgxpool.Pool) chi.Router {
 	// Initialize repositories
 	categoryRepo := repository.NewCategoryRepository(pool)
+	productRepo := repository.NewProductRepository(pool)
 
 	// Initialize handlers
 	categoryHandler := handlers.NewCategoryHandler(categoryRepo)
+	productHandler := handlers.NewProductHandler(productRepo)
 
 	// Setup router
 	router := chi.NewRouter()
@@ -27,6 +29,16 @@ func New(pool *pgxpool.Pool) chi.Router {
 		r.Get("/{id}", categoryHandler.GetByID)
 		r.Put("/{id}", categoryHandler.Update)
 		r.Delete("/{id}", categoryHandler.Delete)
+	})
+
+	// Products routes
+	router.Route("/api/products", func(r chi.Router) {
+		r.Get("/", productHandler.List)
+		r.Post("/", productHandler.Create)
+		r.Get("/{id}", productHandler.GetByID)
+		r.Put("/{id}", productHandler.Update)
+		r.Delete("/{id}", productHandler.Delete)
+		r.Get("/{id}/history", productHandler.GetHistory)
 	})
 
 	return router

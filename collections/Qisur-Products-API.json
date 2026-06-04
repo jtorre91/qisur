@@ -1,0 +1,305 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-06-04T14:30:00.000Z",
+  "__export_source": "insomnia.desktop.app:v9.0.0",
+  "resources": [
+    {
+      "_id": "wrk_qisur",
+      "_type": "workspace",
+      "name": "Qisur Products API",
+      "description": "API REST para gestión de productos y categorías",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_qisur",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:8080",
+        "api_url": "http://localhost:8080/api"
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "api_url"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1686158400000
+    },
+    {
+      "_id": "fld_health",
+      "_type": "request_group",
+      "parentId": "wrk_qisur",
+      "name": "🏥 Health Check",
+      "description": "Health check del servidor"
+    },
+    {
+      "_id": "req_health",
+      "_type": "request",
+      "parentId": "fld_health",
+      "name": "GET - Health",
+      "description": "Verifica que el servidor esté activo",
+      "method": "GET",
+      "url": "{{ _.base_url }}/health",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 0,
+      "isPrivate": false
+    },
+    {
+      "_id": "fld_categories",
+      "_type": "request_group",
+      "parentId": "wrk_qisur",
+      "name": "📁 Categories",
+      "description": "Endpoints para gestión de categorías"
+    },
+    {
+      "_id": "req_list_categories",
+      "_type": "request",
+      "parentId": "fld_categories",
+      "name": "GET - List all categories",
+      "description": "Obtiene la lista de todas las categorías",
+      "method": "GET",
+      "url": "{{ _.api_url }}/categories",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 1,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_get_category",
+      "_type": "request",
+      "parentId": "fld_categories",
+      "name": "GET - Get category by ID",
+      "description": "Obtiene una categoría específica por su ID",
+      "method": "GET",
+      "url": "{{ _.api_url }}/categories/PASTE_CATEGORY_ID_HERE",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 2,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_create_category",
+      "_type": "request",
+      "parentId": "fld_categories",
+      "name": "POST - Create category",
+      "description": "Crea una nueva categoría",
+      "method": "POST",
+      "url": "{{ _.api_url }}/categories",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Electrónica\",\n  \"description\": \"Productos electrónicos y accesorios\"\n}"
+      },
+      "authentication": {},
+      "metaSortKey": 3,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_update_category",
+      "_type": "request",
+      "parentId": "fld_categories",
+      "name": "PUT - Update category",
+      "description": "Actualiza una categoría existente",
+      "method": "PUT",
+      "url": "{{ _.api_url }}/categories/PASTE_CATEGORY_ID_HERE",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Electrónica Premium\",\n  \"description\": \"Productos electrónicos de alta gama\"\n}"
+      },
+      "authentication": {},
+      "metaSortKey": 4,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_delete_category",
+      "_type": "request",
+      "parentId": "fld_categories",
+      "name": "DELETE - Delete category",
+      "description": "Elimina una categoría",
+      "method": "DELETE",
+      "url": "{{ _.api_url }}/categories/PASTE_CATEGORY_ID_HERE",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 5,
+      "isPrivate": false
+    },
+    {
+      "_id": "fld_products",
+      "_type": "request_group",
+      "parentId": "wrk_qisur",
+      "name": "📦 Products",
+      "description": "Endpoints para gestión de productos"
+    },
+    {
+      "_id": "req_list_products",
+      "_type": "request",
+      "parentId": "fld_products",
+      "name": "GET - List all products",
+      "description": "Obtiene la lista de todos los productos",
+      "method": "GET",
+      "url": "{{ _.api_url }}/products",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 1,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_get_product",
+      "_type": "request",
+      "parentId": "fld_products",
+      "name": "GET - Get product by ID",
+      "description": "Obtiene un producto específico por su ID",
+      "method": "GET",
+      "url": "{{ _.api_url }}/products/PASTE_PRODUCT_ID_HERE",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 2,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_create_product",
+      "_type": "request",
+      "parentId": "fld_products",
+      "name": "POST - Create product",
+      "description": "Crea un nuevo producto",
+      "method": "POST",
+      "url": "{{ _.api_url }}/products",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Laptop Dell XPS 13\",\n  \"description\": \"Laptop ultraligera con pantalla OLED\",\n  \"price\": 1299.99,\n  \"stock\": 15\n}"
+      },
+      "authentication": {},
+      "metaSortKey": 3,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_update_product",
+      "_type": "request",
+      "parentId": "fld_products",
+      "name": "PUT - Update product",
+      "description": "Actualiza un producto existente",
+      "method": "PUT",
+      "url": "{{ _.api_url }}/products/PASTE_PRODUCT_ID_HERE",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Laptop Dell XPS 13 Plus\",\n  \"description\": \"Laptop ultraligera con pantalla OLED - modelo mejorado\",\n  \"price\": 1399.99,\n  \"stock\": 12\n}"
+      },
+      "authentication": {},
+      "metaSortKey": 4,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_delete_product",
+      "_type": "request",
+      "parentId": "fld_products",
+      "name": "DELETE - Delete product",
+      "description": "Elimina un producto",
+      "method": "DELETE",
+      "url": "{{ _.api_url }}/products/PASTE_PRODUCT_ID_HERE",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 5,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_product_history",
+      "_type": "request",
+      "parentId": "fld_products",
+      "name": "GET - Product history (sin filtro de fechas)",
+      "description": "Obtiene el historial de cambios de un producto (últimos 10 registros)",
+      "method": "GET",
+      "url": "{{ _.api_url }}/products/PASTE_PRODUCT_ID_HERE/history?limit=10&offset=0",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 6,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_product_history_range",
+      "_type": "request",
+      "parentId": "fld_products",
+      "name": "GET - Product history (con rango de fechas)",
+      "description": "Obtiene el historial de cambios entre dos fechas (formato: YYYY-MM-DD)",
+      "method": "GET",
+      "url": "{{ _.api_url }}/products/PASTE_PRODUCT_ID_HERE/history?start=2026-06-01&end=2026-06-04&limit=10&offset=0",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 7,
+      "isPrivate": false
+    }
+  ]
+}

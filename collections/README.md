@@ -1,22 +1,48 @@
 # Insomnia Collections
 
-Colecciones de API para testear los endpoints de Qisur Challenge.
+Colección unificada de API para testear los endpoints de Qisur Challenge.
+
+## Archivo principal
+
+- **Qisur-Products-API.json** — Colección completa con carpetas por módulo
+
+## Estructura de la colección
+
+```
+Qisur Products API/
+├── 🏥 Health Check
+├── 📁 Categories
+│   ├── GET - List all categories
+│   ├── GET - Get category by ID
+│   ├── POST - Create category
+│   ├── PUT - Update category
+│   └── DELETE - Delete category
+├── 📦 Products
+│   ├── GET - List all products
+│   ├── GET - Get product by ID
+│   ├── POST - Create product
+│   ├── PUT - Update product
+│   ├── DELETE - Delete product
+│   └── GET - Product history
+├── 🔐 Auth (próximamente)
+├── 🔍 Search (próximamente)
+└── Base Environment (variables)
+```
 
 ## Cómo importar en Insomnia
 
-### Opción 1: Importar desde archivo
 1. Abre **Insomnia**
 2. Click en **File** → **Import**
 3. Selecciona **From File**
-4. Elige `Qisur-API.json`
-5. Se importará la colección con todos los endpoints
+4. Elige `Qisur-Products-API.json`
+5. Se importará la colección completa con todas las carpetas
 
-### Opción 2: Crear manualmente
-Si prefieres crear requests desde cero:
+## Cómo agregar nuevos endpoints
 
-1. **New Request** → **HTTP Request**
-2. Configura el método (GET, POST, etc.)
-3. Usa variables de entorno para la URL base
+Cuando agregues nuevas features (Auth, Search, etc.):
+1. Simplemente actualiza este archivo agregando nuevas carpetas/requests
+2. Reimporta en Insomnia para tener la última versión
+3. Sin necesidad de múltiples archivos
 
 ## Variables de entorno
 
@@ -41,6 +67,14 @@ Puedes cambiarlas según tu ambiente (desarrollo, staging, producción).
 - **PUT** `/api/categories/{id}` — Actualiza una categoría
 - **DELETE** `/api/categories/{id}` — Elimina una categoría
 
+### Products (Productos)
+- **GET** `/api/products` — Lista todos los productos
+- **GET** `/api/products/{id}` — Obtiene un producto
+- **POST** `/api/products` — Crea un nuevo producto
+- **PUT** `/api/products/{id}` — Actualiza un producto
+- **DELETE** `/api/products/{id}` — Elimina un producto
+- **GET** `/api/products/{id}/history` — Obtiene historial de cambios (precio y stock)
+
 ## Ejemplos de uso
 
 ### Crear una categoría
@@ -64,6 +98,56 @@ Content-Type: application/json
   "description": "Productos electrónicos de alta gama"
 }
 ```
+
+### Crear un producto
+```json
+POST /api/products
+Content-Type: application/json
+
+{
+  "name": "Laptop Dell XPS 13",
+  "description": "Laptop ultraligera con pantalla OLED",
+  "price": 1299.99,
+  "stock": 15
+}
+```
+
+### Actualizar un producto (registra cambios en historial)
+```json
+PUT /api/products/{id}
+Content-Type: application/json
+
+{
+  "name": "Laptop Dell XPS 13 Plus",
+  "description": "Laptop ultraligera con pantalla OLED - modelo mejorado",
+  "price": 1399.99,
+  "stock": 12
+}
+```
+
+**Nota:** Las categorías de un producto se gestionar mediante la tabla intermedia `product_category`. 
+Para esta fase, los productos se crean sin categorías.
+
+### Obtener historial de cambios de un producto
+
+**Sin filtro de fechas:**
+```
+GET /api/products/{id}/history?limit=10&offset=0
+```
+
+**Con rango de fechas (día/mes/año):**
+```
+GET /api/products/{id}/history?start=2026-06-01&end=2026-06-04&limit=10&offset=0
+```
+
+**Parámetros:**
+- `start` — fecha inicial (YYYY-MM-DD) — opcional
+- `end` — fecha final (YYYY-MM-DD) — opcional
+- `limit` — cantidad de registros por página (default: 10)
+- `offset` — desplazamiento para paginación (default: 0)
+
+**Nota:** Las fechas se buscan sin considerar horas/minutos/segundos. 
+Si pones `start=2026-06-01` y `end=2026-06-04`, busca todos los cambios ocurridos en esos días completos.
 
 ## Notas
 
