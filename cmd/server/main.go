@@ -23,6 +23,13 @@ func main() {
 	defer pool.Close()
 
 	fmt.Println("✓ Connected to database")
+
+	err = db.RunMigrations(pool)
+	if err != nil {
+		log.Fatalf("failed to run migrations: %v", err)
+	}
+
+	fmt.Println("✓ Migrations completed")
 	fmt.Println("✓ Server starting on port", cfg.Port)
 
 	http.HandleFunc("/health", handlers.Health)
