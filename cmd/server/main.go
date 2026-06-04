@@ -7,7 +7,7 @@ import (
 
 	"github.com/jtorre/qisurChallenge/internal/config"
 	"github.com/jtorre/qisurChallenge/internal/db"
-	"github.com/jtorre/qisurChallenge/internal/handlers"
+	"github.com/jtorre/qisurChallenge/internal/router"
 	"github.com/jtorre/qisurChallenge/seeds"
 )
 
@@ -40,9 +40,9 @@ func main() {
 		fmt.Println("✓ Seed skipped (set SEED=true to populate data)")
 	}
 
+	r := router.New(pool)
+
 	fmt.Println("✓ Server starting on port", cfg.Port)
 
-	http.HandleFunc("/health", handlers.Health)
-
-	log.Fatal(http.ListenAndServe(":"+cfg.Port, http.DefaultServeMux))
+	log.Fatal(http.ListenAndServe(":"+cfg.Port, r))
 }
