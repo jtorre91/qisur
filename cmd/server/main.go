@@ -8,6 +8,7 @@ import (
 	"github.com/jtorre/qisurChallenge/internal/config"
 	"github.com/jtorre/qisurChallenge/internal/db"
 	"github.com/jtorre/qisurChallenge/internal/handlers"
+	"github.com/jtorre/qisurChallenge/seeds"
 )
 
 func main() {
@@ -30,6 +31,15 @@ func main() {
 	}
 
 	fmt.Println("✓ Migrations completed")
+
+	if cfg.Seed {
+		if err = seeds.Run(pool); err != nil {
+			log.Fatalf("failed to run seeders: %v", err)
+		}
+	} else {
+		fmt.Println("✓ Seed skipped (set SEED=true to populate data)")
+	}
+
 	fmt.Println("✓ Server starting on port", cfg.Port)
 
 	http.HandleFunc("/health", handlers.Health)
