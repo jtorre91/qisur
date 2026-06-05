@@ -3,6 +3,8 @@ package ws
 import (
 	"encoding/json"
 	"sync"
+
+	"github.com/jtorre/qisurChallenge/internal/config"
 )
 
 type Message struct {
@@ -15,15 +17,19 @@ type Hub struct {
 	broadcast  chan *Message
 	register   chan *Client
 	unregister chan *Client
+	shutdown   chan struct{}
+	config     *config.Config
 	mu         sync.RWMutex
 }
 
-func NewHub() *Hub {
+func NewHub(cfg *config.Config) *Hub {
 	return &Hub{
 		clients:    make(map[*Client]bool),
-		broadcast:  make(chan *Message, 256),
+		broadcast:  make(chan *Message, cfg.WSHubBroadcastBuffer),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
+		shutdown:   make(chan struct{}),
+		config:     cfg,
 	}
 }
 
@@ -49,12 +55,22 @@ func (h *Hub) Run() {
 				select {
 				case client.send <- message:
 				default:
+					// Cliente lento, desconectar (backpressure)
 					go func(c *Client) {
 						h.unregister <- c
 					}(client)
 				}
 			}
 			h.mu.RUnlock()
+
+		case <-h.shutdown:
+			h.mu.Lock()
+			for client := range h.clients {
+				close(client.send)
+			}
+			h.clients = make(map[*Client]bool)
+			h.mu.Unlock()
+			return
 		}
 	}
 }
@@ -70,7 +86,11 @@ func (h *Hub) Broadcast(event string, data interface{}) error {
 		Data:  dataJSON,
 	}
 
-	h.broadcast <- message
+	select {
+	case h.broadcast <- message:
+	case <-h.shutdown:
+		return nil
+	}
 	return nil
 }
 
@@ -86,4 +106,8 @@ func (h *Hub) RegisterClient(client *Client) {
 
 func (h *Hub) UnregisterClient(client *Client) {
 	h.unregister <- client
+}
+
+func (h *Hub) Shutdown() {
+	close(h.shutdown)
 }

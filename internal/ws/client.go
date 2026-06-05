@@ -5,28 +5,24 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/google/uuid"
-)
-
-const (
-	writeWait      = 10 * time.Second
-	pongWait       = 60 * time.Second
-	pingInterval   = (pongWait * 9) / 10
-	maxMessageSize = 512
+	"github.com/jtorre/qisurChallenge/internal/config"
 )
 
 type Client struct {
-	id   uuid.UUID
-	hub  *Hub
-	conn *websocket.Conn
-	send chan *Message
+	id     uuid.UUID
+	hub    *Hub
+	conn   *websocket.Conn
+	send   chan *Message
+	config *config.Config
 }
 
-func NewClient(id uuid.UUID, hub *Hub, conn *websocket.Conn) *Client {
+func NewClient(id uuid.UUID, hub *Hub, conn *websocket.Conn, cfg *config.Config) *Client {
 	return &Client{
-		id:   id,
-		hub:  hub,
-		conn: conn,
-		send: make(chan *Message, 256),
+		id:     id,
+		hub:    hub,
+		conn:   conn,
+		send:   make(chan *Message, cfg.WSClientSendBuffer),
+		config: cfg,
 	}
 }
 
@@ -41,9 +37,10 @@ func (c *Client) readPump() {
 		c.conn.Close()
 	}()
 
-	c.conn.SetReadDeadline(time.Now().Add(pongWait))
+	c.conn.SetReadLimit(int64(c.config.WSMaxMessageSize))
+	c.conn.SetReadDeadline(time.Now().Add(c.config.WSPongWait))
 	c.conn.SetPongHandler(func(string) error {
-		c.conn.SetReadDeadline(time.Now().Add(pongWait))
+		c.conn.SetReadDeadline(time.Now().Add(c.config.WSPongWait))
 		return nil
 	})
 
@@ -51,14 +48,15 @@ func (c *Client) readPump() {
 		_, _, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				break
+				return
 			}
-			break
+			return
 		}
 	}
 }
 
 func (c *Client) writePump() {
+	pingInterval := (c.config.WSPongWait * 9) / 10
 	ticker := time.NewTicker(pingInterval)
 	defer func() {
 		ticker.Stop()
@@ -68,7 +66,7 @@ func (c *Client) writePump() {
 	for {
 		select {
 		case message, ok := <-c.send:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			c.conn.SetWriteDeadline(time.Now().Add(c.config.WSWriteWait))
 			if !ok {
 				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
@@ -79,7 +77,7 @@ func (c *Client) writePump() {
 			}
 
 		case <-ticker.C:
-			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
+			c.conn.SetWriteDeadline(time.Now().Add(c.config.WSWriteWait))
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
 				return
 			}

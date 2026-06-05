@@ -1,9 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/jtorre/qisurChallenge/internal/config"
 	"github.com/jtorre/qisurChallenge/internal/db"
@@ -40,9 +45,36 @@ func main() {
 		fmt.Println("✓ Seed skipped (set SEED=true to populate data)")
 	}
 
-	r := router.New(pool, cfg)
+	server := router.New(pool, cfg)
 
 	fmt.Println("✓ Server starting on port", cfg.Port)
 
-	log.Fatal(http.ListenAndServe(":"+cfg.Port, r))
+	httpServer := &http.Server{
+		Addr:    ":" + cfg.Port,
+		Handler: server.Router,
+	}
+
+	// Graceful shutdown
+	go func() {
+		sigChan := make(chan os.Signal, 1)
+		signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+		<-sigChan
+
+		fmt.Println("\n✓ Shutting down...")
+
+		server.Hub.Shutdown()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := httpServer.Shutdown(ctx); err != nil {
+			log.Printf("HTTP server shutdown error: %v", err)
+		}
+
+		fmt.Println("✓ Server stopped")
+	}()
+
+	if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("server error: %v", err)
+	}
 }

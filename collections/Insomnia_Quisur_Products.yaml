@@ -1,0 +1,578 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Qisur Products API
+meta:
+  id: wrk_823014086b664334880d200e6751c5e6
+  created: 1780689773740
+  modified: 1780689773740
+  description: ""
+collection:
+  - name: 🏥 Health Check
+    meta:
+      id: fld_73f8af6aee794e06a114abfc61961435
+      created: 1780689773752
+      modified: 1780689773752
+      sortKey: -1780689773752
+      description: Health check del servidor
+    children:
+      - url: "{{ _.base_url }}/health"
+        name: GET - Health
+        meta:
+          id: req_080a961f9d6b47b1b9bf9972fccac1c2
+          created: 1780689773754
+          modified: 1780689773754
+          isPrivate: false
+          description: Verifica que el servidor esté activo
+          sortKey: 0
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 🔐 Auth
+    meta:
+      id: fld_10a9f396b85d48219515cb8dae6586c2
+      created: 1780689773755
+      modified: 1780689773755
+      sortKey: -1780689773755
+      description: Endpoints de autenticación
+    children:
+      - url: "{{ _.api_url }}/auth/register"
+        name: POST - Register
+        meta:
+          id: req_9f714613ce78497a82ab22ebaa04ef3e
+          created: 1780689773757
+          modified: 1780689773757
+          isPrivate: false
+          description: Registra un nuevo usuario y devuelve JWT
+          sortKey: 1
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "user@example.com",
+              "password": "password123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url }}/auth/login"
+        name: POST - Login
+        meta:
+          id: req_996f6ad4fc704b28967c85b6592bf493
+          created: 1780689773759
+          modified: 1780689909539
+          isPrivate: false
+          description: Login y obtén JWT
+          sortKey: 2
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "email": "admin@qisur.com",
+              "password": "admin123"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 📁 Categories
+    meta:
+      id: fld_1bb0ccbe3188471bbde0292aaa686e9c
+      created: 1780689773760
+      modified: 1780689773760
+      sortKey: -1780689773760
+      description: Endpoints para gestión de categorías
+    children:
+      - url: "{{ _.api_url }}/categories"
+        name: GET - List all categories
+        meta:
+          id: req_0c3a541c9d414fd09a109fbf35d18e87
+          created: 1780689773762
+          modified: 1780689773762
+          isPrivate: false
+          description: Obtiene la lista de todas las categorías
+          sortKey: 1
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url }}/categories/0244bea7-3538-4150-8b76-ee961e3cfcbf"
+        name: GET - Get category by ID
+        meta:
+          id: req_303897f1687f416ca1e3c7f791533849
+          created: 1780689773764
+          modified: 1780692159153
+          isPrivate: false
+          description: Obtiene una categoría específica por su ID
+          sortKey: 2
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url }}/categories"
+        name: POST - Create category
+        meta:
+          id: req_5df0c6a6d73045f792f9295d891d114f
+          created: 1780689773765
+          modified: 1780690156380
+          isPrivate: false
+          description: Crea una nueva categoría
+          sortKey: 3
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Electrónica",
+              "description": "Productos electrónicos y accesorios"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiM2M3YzVkMGItOWJjMC00NDc2LWFlZGUtYzg3MmVmOGIzZWFlIiwiZW1haWwiOiJhZG1pbkBxaXN1ci5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3ODA3NzYzNTcsIm5iZiI6MTc4MDY4OTk1NywiaWF0IjoxNzgwNjg5OTU3fQ.VgT6QIPXwP1_kpqvZaaRPgfHAV-64l42433xuPyF0W0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url }}/categories/6611bf64-ca3a-4f3c-822c-78cc40cf1381"
+        name: PUT - Update category
+        meta:
+          id: req_f39825f243ba45798b9642149f333d7c
+          created: 1780689773767
+          modified: 1780692280787
+          isPrivate: false
+          description: Actualiza una categoría existente
+          sortKey: 4
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Electrónica Premium",
+              "description": "Supertruper its gonna shine"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiM2M3YzVkMGItOWJjMC00NDc2LWFlZGUtYzg3MmVmOGIzZWFlIiwiZW1haWwiOiJhZG1pbkBxaXN1ci5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3ODA3NzYzNTcsIm5iZiI6MTc4MDY4OTk1NywiaWF0IjoxNzgwNjg5OTU3fQ.VgT6QIPXwP1_kpqvZaaRPgfHAV-64l42433xuPyF0W0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url }}/categories/PASTE_CATEGORY_ID_HERE"
+        name: DELETE - Delete category
+        meta:
+          id: req_6ce75139fdc24abfa6f27ddfc92f4aaa
+          created: 1780689773768
+          modified: 1780689773768
+          isPrivate: false
+          description: Elimina una categoría
+          sortKey: 5
+        method: DELETE
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 📦 Products
+    meta:
+      id: fld_395c11f8e5234d4bb34bc4201c7ca16e
+      created: 1780689773769
+      modified: 1780689773769
+      sortKey: -1780689773769
+      description: Endpoints para gestión de productos
+    children:
+      - url: "{{ _.api_url }}/products"
+        name: GET - List all products
+        meta:
+          id: req_abfa4706c0d047329d060e68d77af536
+          created: 1780689773769
+          modified: 1780689773769
+          isPrivate: false
+          description: Obtiene la lista de todos los productos
+          sortKey: 1
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url }}/products/892f3c2a-f2ff-4f19-ae27-dbf9bab80e27"
+        name: GET - Get product by ID
+        meta:
+          id: req_e802a5cd337e4d68b95a96acbd4b45e1
+          created: 1780689773770
+          modified: 1780692093280
+          isPrivate: false
+          description: Obtiene un producto específico por su ID
+          sortKey: 2
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url }}/products"
+        name: POST - Create product
+        meta:
+          id: req_846c97bbbc444bc9ae02b43bd6ac7bb4
+          created: 1780689773771
+          modified: 1780692720576
+          isPrivate: false
+          description: Crea un nuevo producto
+          sortKey: 3
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "LightSaber",
+              "description": "Jedais weapon",
+              "price": 1299.99,
+              "stock": 15,
+              "category_ids": ["dc66ee86-227b-4ee1-8309-5ec96c5e4052"]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiM2M3YzVkMGItOWJjMC00NDc2LWFlZGUtYzg3MmVmOGIzZWFlIiwiZW1haWwiOiJhZG1pbkBxaXN1ci5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3ODA3NzYzNTcsIm5iZiI6MTc4MDY4OTk1NywiaWF0IjoxNzgwNjg5OTU3fQ.VgT6QIPXwP1_kpqvZaaRPgfHAV-64l42433xuPyF0W0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url }}/products/1011818a-5ff2-4776-824f-8f51af354e1e"
+        name: PUT - Update product
+        meta:
+          id: req_0180564703674072884e18f9083d27c7
+          created: 1780689773772
+          modified: 1780693178954
+          isPrivate: false
+          description: Actualiza un producto existente
+          sortKey: 4
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "name": "Light0s4b3r",
+              "description": "modelo mejorado",
+              "price": 1000000,
+              "stock": 1,
+              "category_ids": ["dc66ee86-227b-4ee1-8309-5ec96c5e4052"]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiM2M3YzVkMGItOWJjMC00NDc2LWFlZGUtYzg3MmVmOGIzZWFlIiwiZW1haWwiOiJhZG1pbkBxaXN1ci5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3ODA3NzYzNTcsIm5iZiI6MTc4MDY4OTk1NywiaWF0IjoxNzgwNjg5OTU3fQ.VgT6QIPXwP1_kpqvZaaRPgfHAV-64l42433xuPyF0W0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url }}/products/f03ff7bd-df52-4c9b-8a5b-88bc1f5134ef"
+        name: DELETE - Delete product
+        meta:
+          id: req_8b90bbfdfc4f4a00853954784f2a08d8
+          created: 1780689773773
+          modified: 1780690478569
+          isPrivate: false
+          description: Elimina un producto
+          sortKey: 5
+        method: DELETE
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        authentication:
+          type: bearer
+          token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiM2M3YzVkMGItOWJjMC00NDc2LWFlZGUtYzg3MmVmOGIzZWFlIiwiZW1haWwiOiJhZG1pbkBxaXN1ci5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3ODA3NzYzNTcsIm5iZiI6MTc4MDY4OTk1NywiaWF0IjoxNzgwNjg5OTU3fQ.VgT6QIPXwP1_kpqvZaaRPgfHAV-64l42433xuPyF0W0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url
+          }}/products/1011818a-5ff2-4776-824f-8f51af354e1e/history?limit=10&off\
+          set=0"
+        name: GET - Product history (sin filtro de fechas)
+        meta:
+          id: req_818b0dca805d4d80a4285a288bdb3534
+          created: 1780689773774
+          modified: 1780693011278
+          isPrivate: false
+          description: Obtiene el historial de cambios de un producto (últimos 10 registros)
+          sortKey: 6
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url
+          }}/products/PASTE_PRODUCT_ID_HERE/history?start=2026-06-01&end=2026-0\
+          6-04&limit=10&offset=0"
+        name: GET - Product history (con rango de fechas)
+        meta:
+          id: req_97fba284e2db40e3bdc271db22589312
+          created: 1780689773775
+          modified: 1780689773775
+          isPrivate: false
+          description: "Obtiene el historial de cambios entre dos fechas (formato:
+            YYYY-MM-DD)"
+          sortKey: 7
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 🔍 Search
+    meta:
+      id: fld_2991c1475bfe44f1a7043cfdf3410999
+      created: 1780689773776
+      modified: 1780689773776
+      sortKey: -1780689773776
+      description: Endpoints de búsqueda, filtros y ordenamiento
+    children:
+      - url: "{{ _.api_url
+          }}/search?type=product&q=laptop&min_price=500&max_price=2000&sort_by=\
+          price&order=ASC&page=1&limit=10"
+        name: GET - Search products
+        meta:
+          id: req_7923c861abf948fda9c1cc0183d11787
+          created: 1780689773777
+          modified: 1780689773777
+          isPrivate: false
+          description: Busca productos con filtros, ordenamiento y paginación
+          sortKey: 1
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url }}/search?type=product&q=cable&page=1&limit=10"
+        name: GET - Search products (simple)
+        meta:
+          id: req_9fef69bb744644feb2e890567914c892
+          created: 1780689773778
+          modified: 1780689773778
+          isPrivate: false
+          description: Búsqueda simple de productos por texto
+          sortKey: 2
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.api_url
+          }}/search?type=category&q=electr&sort_by=name&order=ASC&page=1&limit=\
+          10"
+        name: GET - Search categories
+        meta:
+          id: req_42ad0af4be0c42caacff137333e4edb8
+          created: 1780689773779
+          modified: 1780692361116
+          isPrivate: false
+          description: Busca categorías con filtros y ordenamiento
+          sortKey: 3
+        method: GET
+        body:
+          mimeType: application/json
+          text: ""
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 🔌 WebSocket
+    meta:
+      id: fld_063cad8662ae4ba696d506c4b0c1fe68
+      created: 1780689773780
+      modified: 1780689773780
+      sortKey: -1780689773780
+      description: Conexiones WebSocket para eventos en tiempo real
+    children:
+      - url: ws://localhost:8080/ws?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiM2M3YzVkMGItOWJjMC00NDc2LWFlZGUtYzg3MmVmOGIzZWFlIiwiZW1haWwiOiJhZG1pbkBxaXN1ci5jb20iLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3ODA3NzYzNTcsIm5iZiI6MTc4MDY4OTk1NywiaWF0IjoxNzgwNjg5OTU3fQ.VgT6QIPXwP1_kpqvZaaRPgfHAV-64l42433xuPyF0W0
+        name: New WebSocket Request
+        meta:
+          id: ws-req_bfe31106cbac4eb4b91dfd391aae42e4
+          created: 1780690012383
+          modified: 1780690099667
+          description: ""
+          sortKey: -99
+        settings:
+          encodeUrl: true
+          cookies:
+            store: true
+            send: true
+          followRedirects: global
+        headers:
+          - name: User-Agent
+            value: insomnia/12.6.0
+            description: ""
+            disabled: false
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_f299ccace18a4b0146a773d3351cfa165628a89a
+    created: 1780689773904
+    modified: 1780689773904
+environments:
+  name: Base Environment
+  meta:
+    id: env_ca0075f9e6ba41c1b808368a72acabc2
+    created: 1780689773750
+    modified: 1780689773750
+    isPrivate: false
+  data:
+    base_url: http://localhost:8080
+    api_url: http://localhost:8080/api

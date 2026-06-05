@@ -260,17 +260,20 @@ GET /api/search?type=category&q=electr&sort_by=name&order=ASC&page=1&limit=10
 
 ### Conectar a WebSocket
 
-En Insomnia, coloca la URL en la sección de WebSocket:
+En Insomnia, la request **"🔌 WebSocket Connection"** está configurada como tipo **WEBSOCKET**:
+
 ```
 ws://localhost:8080/ws?token=<tu_jwt>
 ```
 
-**Pasos:**
-1. Obtén un JWT con `/api/auth/login`
-2. Copia el token
-3. Usa la request "WebSocket Connection" en la colección
-4. Reemplaza `PASTE_JWT_TOKEN_HERE` con tu token
-5. Conecta y espera eventos en tiempo real
+**Pasos para conectar:**
+1. Obtén un JWT con `/api/auth/login` (copiar el token del response)
+2. Abre la request **"🔌 WebSocket Connection"** en la carpeta WebSocket
+3. Reemplaza `PASTE_JWT_TOKEN_HERE` con tu JWT token en la URL
+4. Click en **"Connect"** para abrir la conexión WebSocket
+5. Espera a que aparezcan los eventos en tiempo real en el panel inferior
+
+**Nota:** El método debe ser **WEBSOCKET**
 
 ### Eventos que recibirás
 

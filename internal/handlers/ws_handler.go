@@ -48,7 +48,7 @@ func (h *WSHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client := ws.NewClient(claims.UserID, h.hub, conn)
+	client := ws.NewClient(claims.UserID, h.hub, conn, h.cfg)
 	h.hub.RegisterClient(client)
 
 	client.Run()

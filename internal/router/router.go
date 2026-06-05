@@ -12,9 +12,14 @@ import (
 	_ "github.com/jtorre/qisurChallenge/docs"
 )
 
-func New(pool *pgxpool.Pool, cfg *config.Config) chi.Router {
+type Server struct {
+	Router *chi.Mux
+	Hub    *ws.Hub
+}
+
+func New(pool *pgxpool.Pool, cfg *config.Config) *Server {
 	// Initialize WebSocket
-	hub := ws.NewHub()
+	hub := ws.NewHub(cfg)
 	go hub.Run()
 
 	// Initialize repositories
@@ -74,5 +79,8 @@ func New(pool *pgxpool.Pool, cfg *config.Config) chi.Router {
 	// WebSocket route
 	router.Get("/ws", wsHandler.Handle)
 
-	return router
+	return &Server{
+		Router: router,
+		Hub:    hub,
+	}
 }
