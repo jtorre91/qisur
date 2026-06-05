@@ -7,9 +7,14 @@ import (
 	"github.com/jtorre/qisurChallenge/internal/handlers"
 	"github.com/jtorre/qisurChallenge/internal/middleware"
 	"github.com/jtorre/qisurChallenge/internal/repository"
+	"github.com/jtorre/qisurChallenge/internal/ws"
 )
 
 func New(pool *pgxpool.Pool, cfg *config.Config) chi.Router {
+	// Initialize WebSocket
+	hub := ws.NewHub()
+	go hub.Run()
+
 	// Initialize repositories
 	categoryRepo := repository.NewCategoryRepository(pool)
 	productRepo := repository.NewProductRepository(pool)
@@ -17,10 +22,11 @@ func New(pool *pgxpool.Pool, cfg *config.Config) chi.Router {
 	userRepo := repository.NewUserRepository(pool)
 
 	// Initialize handlers
-	categoryHandler := handlers.NewCategoryHandler(categoryRepo)
-	productHandler := handlers.NewProductHandler(productRepo)
+	categoryHandler := handlers.NewCategoryHandler(categoryRepo, hub)
+	productHandler := handlers.NewProductHandler(productRepo, hub)
 	searchHandler := handlers.NewSearchHandler(searchRepo)
 	authHandler := handlers.NewAuthHandler(userRepo, cfg)
+	wsHandler := handlers.NewWSHandler(hub, cfg)
 
 	// Setup router
 	router := chi.NewRouter()
@@ -57,6 +63,9 @@ func New(pool *pgxpool.Pool, cfg *config.Config) chi.Router {
 
 	// Search routes
 	router.Get("/api/search", searchHandler.Search)
+
+	// WebSocket route
+	router.Get("/ws", wsHandler.Handle)
 
 	return router
 }

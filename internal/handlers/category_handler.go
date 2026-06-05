@@ -8,14 +8,16 @@ import (
 	"github.com/google/uuid"
 	"github.com/jtorre/qisurChallenge/internal/models"
 	"github.com/jtorre/qisurChallenge/internal/repository"
+	"github.com/jtorre/qisurChallenge/internal/ws"
 )
 
 type CategoryHandler struct {
 	repo *repository.CategoryRepository
+	hub  *ws.Hub
 }
 
-func NewCategoryHandler(repo *repository.CategoryRepository) *CategoryHandler {
-	return &CategoryHandler{repo: repo}
+func NewCategoryHandler(repo *repository.CategoryRepository, hub *ws.Hub) *CategoryHandler {
+	return &CategoryHandler{repo: repo, hub: hub}
 }
 
 func (h *CategoryHandler) List(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +67,8 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.hub.Broadcast("category_created", created)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(created)
@@ -95,6 +99,8 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.hub.Broadcast("category_updated", updated)
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(updated)
 }
@@ -112,6 +118,8 @@ func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "category not found", http.StatusNotFound)
 		return
 	}
+
+	h.hub.Broadcast("category_deleted", map[string]string{"id": id.String()})
 
 	w.WriteHeader(http.StatusNoContent)
 }

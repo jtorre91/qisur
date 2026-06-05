@@ -9,10 +9,12 @@ import (
 	"github.com/jtorre/qisurChallenge/internal/models"
 	"github.com/jtorre/qisurChallenge/internal/repository"
 	"github.com/jtorre/qisurChallenge/internal/utils"
+	"github.com/jtorre/qisurChallenge/internal/ws"
 )
 
 type ProductHandler struct {
 	repo *repository.ProductRepository
+	hub  *ws.Hub
 }
 
 type CreateProductRequest struct {
@@ -31,8 +33,8 @@ type UpdateProductRequest struct {
 	CategoryIDs []uuid.UUID `json:"category_ids"`
 }
 
-func NewProductHandler(repo *repository.ProductRepository) *ProductHandler {
-	return &ProductHandler{repo: repo}
+func NewProductHandler(repo *repository.ProductRepository, hub *ws.Hub) *ProductHandler {
+	return &ProductHandler{repo: repo, hub: hub}
 }
 
 func (h *ProductHandler) List(w http.ResponseWriter, r *http.Request) {
@@ -111,6 +113,8 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.hub.Broadcast("product_created", created)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(created)
@@ -167,6 +171,8 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.hub.Broadcast("product_updated", updated)
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(updated)
 }
@@ -184,6 +190,8 @@ func (h *ProductHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "product not found", http.StatusNotFound)
 		return
 	}
+
+	h.hub.Broadcast("product_deleted", map[string]string{"id": id.String()})
 
 	w.WriteHeader(http.StatusNoContent)
 }
