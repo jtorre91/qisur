@@ -45,13 +45,6 @@ Qisur Products API/
 4. Elige `Qisur-Products-API.json`
 5. Se importará la colección completa con todas las carpetas
 
-## Cómo agregar nuevos endpoints
-
-Cuando agregues nuevas features (Auth, Search, etc.):
-1. Simplemente actualiza este archivo agregando nuevas carpetas/requests
-2. Reimporta en Insomnia para tener la última versión
-3. Sin necesidad de múltiples archivos
-
 ## Variables de entorno
 
 La colección usa variables para mayor flexibilidad:
@@ -60,8 +53,6 @@ La colección usa variables para mayor flexibilidad:
 base_url = http://localhost:8080
 api_url = http://localhost:8080/api
 ```
-
-Puedes cambiarlas según tu ambiente (desarrollo, staging, producción).
 
 ## Endpoints disponibles
 

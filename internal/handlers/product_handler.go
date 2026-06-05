@@ -12,6 +12,9 @@ import (
 	"github.com/jtorre/qisurChallenge/internal/ws"
 )
 
+// Alias para evitar conflicto entre package utils y la carpeta internal/utils
+var validate = utils.ValidateNonEmpty
+
 type ProductHandler struct {
 	repo *repository.ProductRepository
 	hub  *ws.Hub
@@ -73,29 +76,29 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Name == "" {
-		http.Error(w, "name is required", http.StatusBadRequest)
+	if err := utils.ValidateNonEmpty(req.Name, "name"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
-	if req.Price < 0 {
-		http.Error(w, "price must be positive", http.StatusBadRequest)
+	if err := utils.ValidatePositive(req.Price, "price"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
-	if req.Stock < 0 {
-		http.Error(w, "stock must be non-negative", http.StatusBadRequest)
+	if err := utils.ValidateNonNegative(req.Stock, "stock"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
 	if len(req.CategoryIDs) == 0 {
-		http.Error(w, "at least one category is required", http.StatusBadRequest)
+		RespondError(w, utils.NewValidationError("at least one category is required"))
 		return
 	}
 
 	for _, catID := range req.CategoryIDs {
 		if catID == uuid.Nil {
-			http.Error(w, "invalid category id", http.StatusBadRequest)
+			RespondError(w,utils.NewValidationError("invalid category id"))
 			return
 		}
 	}
@@ -109,7 +112,7 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	created, err := h.repo.Create(r.Context(), prod, req.CategoryIDs)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		RespondError(w, err)
 		return
 	}
 
@@ -134,18 +137,18 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Name == "" {
-		http.Error(w, "name is required", http.StatusBadRequest)
+	if err := utils.ValidateNonEmpty(req.Name, "name"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
-	if req.Price < 0 {
-		http.Error(w, "price must be positive", http.StatusBadRequest)
+	if err := utils.ValidatePositive(req.Price, "price"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
-	if req.Stock < 0 {
-		http.Error(w, "stock must be non-negative", http.StatusBadRequest)
+	if err := utils.ValidateNonNegative(req.Stock, "stock"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
@@ -167,7 +170,7 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	updated, err := h.repo.Update(r.Context(), id, prod, req.CategoryIDs)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		RespondNotFound(w, err.Error())
 		return
 	}
 

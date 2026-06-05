@@ -7,6 +7,7 @@ import (
 	"github.com/jtorre/qisurChallenge/internal/auth"
 	"github.com/jtorre/qisurChallenge/internal/config"
 	"github.com/jtorre/qisurChallenge/internal/repository"
+	"github.com/jtorre/qisurChallenge/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -46,32 +47,32 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Email == "" {
-		http.Error(w, "email is required", http.StatusBadRequest)
+	if err := utils.ValidateNonEmpty(req.Email, "email"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
-	if req.Password == "" {
-		http.Error(w, "password is required", http.StatusBadRequest)
+	if err := utils.ValidateNonEmpty(req.Password, "password"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
-	if len(req.Password) < 6 {
-		http.Error(w, "password must be at least 6 characters", http.StatusBadRequest)
+	if err := utils.ValidateMinLength(req.Password, 6, "password"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
 	// Check if user already exists
 	_, err := h.userRepo.GetByEmail(r.Context(), req.Email)
 	if err == nil {
-		http.Error(w, "email already registered", http.StatusConflict)
+		RespondConflict(w, "email already registered")
 		return
 	}
 
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		http.Error(w, "failed to hash password", http.StatusInternalServerError)
+		RespondError(w, err)
 		return
 	}
 
@@ -106,33 +107,33 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Email == "" {
-		http.Error(w, "email is required", http.StatusBadRequest)
+	if err := utils.ValidateNonEmpty(req.Email, "email"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
-	if req.Password == "" {
-		http.Error(w, "password is required", http.StatusBadRequest)
+	if err := utils.ValidateNonEmpty(req.Password, "password"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
 	// Get user by email
 	user, err := h.userRepo.GetByEmail(r.Context(), req.Email)
 	if err != nil {
-		http.Error(w, "invalid credentials", http.StatusUnauthorized)
+		RespondUnauthorized(w, "invalid credentials")
 		return
 	}
 
 	// Verify password
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
-		http.Error(w, "invalid credentials", http.StatusUnauthorized)
+		RespondUnauthorized(w, "invalid credentials")
 		return
 	}
 
 	// Generate token
 	token, err := auth.GenerateToken(user.ID, user.Email, user.Role, h.cfg.JWTSecret, h.cfg.JWTExpirationHours)
 	if err != nil {
-		http.Error(w, "failed to generate token", http.StatusInternalServerError)
+		RespondError(w, err)
 		return
 	}
 

@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jtorre/qisurChallenge/internal/models"
 	"github.com/jtorre/qisurChallenge/internal/repository"
+	"github.com/jtorre/qisurChallenge/internal/utils"
 	"github.com/jtorre/qisurChallenge/internal/ws"
 )
 
@@ -56,14 +57,14 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if cat.Name == "" {
-		http.Error(w, "name is required", http.StatusBadRequest)
+	if err := utils.ValidateNonEmpty(cat.Name, "name"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
 	created, err := h.repo.Create(r.Context(), &cat)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		RespondError(w, err)
 		return
 	}
 
@@ -88,14 +89,14 @@ func (h *CategoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if cat.Name == "" {
-		http.Error(w, "name is required", http.StatusBadRequest)
+	if err := utils.ValidateNonEmpty(cat.Name, "name"); err != nil {
+		RespondError(w, err)
 		return
 	}
 
 	updated, err := h.repo.Update(r.Context(), id, &cat)
 	if err != nil {
-		http.Error(w, "category not found", http.StatusNotFound)
+		RespondNotFound(w, "category not found")
 		return
 	}
 
@@ -115,7 +116,7 @@ func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	err = h.repo.Delete(r.Context(), id)
 	if err != nil {
-		http.Error(w, "category not found", http.StatusNotFound)
+		RespondNotFound(w, "category not found")
 		return
 	}
 
