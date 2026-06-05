@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jtorre/qisurChallenge/internal/models"
 	"github.com/jtorre/qisurChallenge/internal/repository"
+	"github.com/jtorre/qisurChallenge/internal/utils"
 )
 
 type ProductHandler struct {
@@ -195,11 +196,11 @@ func (h *ProductHandler) GetHistory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := ExtractPageParam(r)
-	limit := ExtractLimitParam(r)
-	offset := ExtractOffsetFromPage(page, limit)
-	startDate := ExtractStartDateParam(r)
-	endDate := ExtractEndDateParam(r)
+	page := utils.ExtractPageParam(r)
+	limit := utils.ExtractLimitParam(r)
+	offset := utils.ExtractOffsetFromPage(page, limit)
+	startDate := utils.ExtractStartDateParam(r)
+	endDate := utils.ExtractEndDateParam(r)
 
 	history, err := h.repo.GetHistory(r.Context(), id, startDate, endDate, limit, offset)
 	if err != nil {

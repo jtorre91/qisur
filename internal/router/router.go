@@ -3,26 +3,35 @@ package router
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jtorre/qisurChallenge/internal/config"
 	"github.com/jtorre/qisurChallenge/internal/handlers"
 	"github.com/jtorre/qisurChallenge/internal/repository"
 )
 
-func New(pool *pgxpool.Pool) chi.Router {
+func New(pool *pgxpool.Pool, cfg *config.Config) chi.Router {
 	// Initialize repositories
 	categoryRepo := repository.NewCategoryRepository(pool)
 	productRepo := repository.NewProductRepository(pool)
 	searchRepo := repository.NewSearchRepository(pool)
+	userRepo := repository.NewUserRepository(pool)
 
 	// Initialize handlers
 	categoryHandler := handlers.NewCategoryHandler(categoryRepo)
 	productHandler := handlers.NewProductHandler(productRepo)
 	searchHandler := handlers.NewSearchHandler(searchRepo)
+	authHandler := handlers.NewAuthHandler(userRepo, cfg)
 
 	// Setup router
 	router := chi.NewRouter()
 
 	// Health check
 	router.Get("/health", handlers.Health)
+
+	// Auth routes
+	router.Route("/api/auth", func(r chi.Router) {
+		r.Post("/register", authHandler.Register)
+		r.Post("/login", authHandler.Login)
+	})
 
 	// Categories routes
 	router.Route("/api/categories", func(r chi.Router) {

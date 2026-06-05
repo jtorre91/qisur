@@ -56,6 +56,57 @@
       "isPrivate": false
     },
     {
+      "_id": "fld_auth",
+      "_type": "request_group",
+      "parentId": "wrk_qisur",
+      "name": "🔐 Auth",
+      "description": "Endpoints de autenticación"
+    },
+    {
+      "_id": "req_register",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "name": "POST - Register",
+      "description": "Registra un nuevo usuario y devuelve JWT",
+      "method": "POST",
+      "url": "{{ _.api_url }}/auth/register",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+      },
+      "authentication": {},
+      "metaSortKey": 1,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_login",
+      "_type": "request",
+      "parentId": "fld_auth",
+      "name": "POST - Login",
+      "description": "Login y obtén JWT",
+      "method": "POST",
+      "url": "{{ _.api_url }}/auth/login",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+      },
+      "authentication": {},
+      "metaSortKey": 2,
+      "isPrivate": false
+    },
+    {
       "_id": "fld_categories",
       "_type": "request_group",
       "parentId": "wrk_qisur",

@@ -11,6 +11,9 @@ Colección unificada de API para testear los endpoints de Qisur Challenge.
 ```
 Qisur Products API/
 ├── 🏥 Health Check
+├── 🔐 Auth
+│   ├── POST - Register
+│   └── POST - Login
 ├── 📁 Categories
 │   ├── GET - List all categories
 │   ├── GET - Get category by ID
@@ -63,6 +66,10 @@ Puedes cambiarlas según tu ambiente (desarrollo, staging, producción).
 ### Health Check
 - **GET** `/health` — Verifica que el servidor esté activo
 
+### Auth (Autenticación)
+- **POST** `/api/auth/register` — Registra un nuevo usuario
+- **POST** `/api/auth/login` — Login y obtén JWT
+
 ### Categories (Categorías)
 - **GET** `/api/categories` — Lista todas las categorías
 - **GET** `/api/categories/{id}` — Obtiene una categoría
@@ -79,6 +86,50 @@ Puedes cambiarlas según tu ambiente (desarrollo, staging, producción).
 - **GET** `/api/products/{id}/history` — Obtiene historial de cambios (precio y stock)
 
 ## Ejemplos de uso
+
+### Registrar un usuario
+```json
+POST /api/auth/register
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "email": "user@example.com",
+  "role": "client",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+### Login
+```json
+POST /api/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "email": "user@example.com",
+  "role": "client",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Nota:** El token devuelto es un JWT válido por 24 horas (configurable en `.env` con `JWT_EXPIRATION_HOURS`).
 
 ### Crear una categoría
 ```json

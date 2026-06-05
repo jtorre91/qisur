@@ -40,7 +40,7 @@ func main() {
 		fmt.Println("✓ Seed skipped (set SEED=true to populate data)")
 	}
 
-	r := router.New(pool)
+	r := router.New(pool, cfg)
 
 	fmt.Println("✓ Server starting on port", cfg.Port)
 

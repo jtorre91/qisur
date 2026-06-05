@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/jtorre/qisurChallenge/internal/repository"
+	"github.com/jtorre/qisurChallenge/internal/utils"
 )
 
 type SearchHandler struct {
@@ -37,12 +38,12 @@ func (h *SearchHandler) Search(w http.ResponseWriter, r *http.Request) {
 
 func (h *SearchHandler) searchProducts(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
-	sortBy := ExtractSortByParam(r)
-	order := ExtractOrderParam(r)
-	page := ExtractPageParam(r) 
-	limit := ExtractLimitParam(r)
-	minPrice := ExtractMinPriceParam(r)
-	maxPrice := ExtractMaxPriceParam(r)
+	sortBy := utils.ExtractSortByParam(r)
+	order := utils.ExtractOrderParam(r)
+	page := utils.ExtractPageParam(r)
+	limit := utils.ExtractLimitParam(r)
+	minPrice := utils.ExtractMinPriceParam(r)
+	maxPrice := utils.ExtractMaxPriceParam(r)
 
 	if minPrice != nil && maxPrice != nil && *minPrice > *maxPrice {
 		http.Error(w, "min_price cannot be greater than max_price", http.StatusBadRequest)
@@ -71,10 +72,10 @@ func (h *SearchHandler) searchProducts(w http.ResponseWriter, r *http.Request) {
 
 func (h *SearchHandler) searchCategories(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query().Get("q")
-	page := ExtractPageParam(r) 
-	limit := ExtractLimitParam(r)
-	sortBy := ExtractSortByParam(r)
-	order := ExtractOrderParam(r)
+	page := utils.ExtractPageParam(r)
+	limit := utils.ExtractLimitParam(r)
+	sortBy := utils.ExtractSortByParam(r)
+	order := utils.ExtractOrderParam(r)
 
 	params := repository.SearchCategoriesParams{
 		Query:  query,
