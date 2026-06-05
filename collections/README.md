@@ -26,12 +26,14 @@ Qisur Products API/
 │   ├── POST - Create product
 │   ├── PUT - Update product
 │   ├── DELETE - Delete product
-│   └── GET - Product history
-├── 🔐 Auth (próximamente)
+│   ├── GET - Product history (sin filtro)
+│   └── GET - Product history (con rango de fechas)
 ├── 🔍 Search
 │   ├── GET - Search products (completo con filtros)
 │   ├── GET - Search products (simple)
 │   └── GET - Search categories
+├── 🔌 WebSocket
+│   └── GET - WebSocket Connection
 └── Base Environment (variables)
 ```
 
@@ -263,8 +265,36 @@ GET /api/search?type=category&q=electr&sort_by=name&order=ASC&page=1&limit=10
 }
 ```
 
+## WebSocket
+
+### Conectar a WebSocket
+
+En Insomnia, coloca la URL en la sección de WebSocket:
+```
+ws://localhost:8080/ws?token=<tu_jwt>
+```
+
+**Pasos:**
+1. Obtén un JWT con `/api/auth/login`
+2. Copia el token
+3. Usa la request "WebSocket Connection" en la colección
+4. Reemplaza `PASTE_JWT_TOKEN_HERE` con tu token
+5. Conecta y espera eventos en tiempo real
+
+### Eventos que recibirás
+
+```json
+{"event": "product_created", "data": {...}}
+{"event": "product_updated", "data": {...}}
+{"event": "product_deleted", "data": {"id": "..."}}
+{"event": "category_created", "data": {...}}
+{"event": "category_updated", "data": {...}}
+{"event": "category_deleted", "data": {"id": "..."}}
+```
+
 ## Notas
 
 - Reemplaza `PASTE_CATEGORY_ID_HERE` con el ID real de una categoría
+- Reemplaza `PASTE_JWT_TOKEN_HERE` con tu JWT token
 - Los IDs son UUID (ejemplo: `550e8400-e29b-41d4-a716-446655440000`)
-- Para obtener IDs, usa primero el endpoint de `List all categories`
+- Para obtener IDs, usa primero el endpoint de `List all categories` o `List all products`

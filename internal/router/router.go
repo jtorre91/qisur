@@ -8,6 +8,8 @@ import (
 	"github.com/jtorre/qisurChallenge/internal/middleware"
 	"github.com/jtorre/qisurChallenge/internal/repository"
 	"github.com/jtorre/qisurChallenge/internal/ws"
+	httpSwagger "github.com/swaggo/http-swagger"
+	_ "github.com/jtorre/qisurChallenge/docs"
 )
 
 func New(pool *pgxpool.Pool, cfg *config.Config) chi.Router {
@@ -33,6 +35,11 @@ func New(pool *pgxpool.Pool, cfg *config.Config) chi.Router {
 
 	// Health check
 	router.Get("/health", handlers.Health)
+
+	// Swagger documentation
+	router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
+	))
 
 	// Auth routes
 	router.Route("/api/auth", func(r chi.Router) {

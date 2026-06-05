@@ -412,6 +412,26 @@
       "authentication": {},
       "metaSortKey": 3,
       "isPrivate": false
+    },
+    {
+      "_id": "fld_websocket",
+      "_type": "request_group",
+      "parentId": "wrk_qisur",
+      "name": "🔌 WebSocket",
+      "description": "Conexiones WebSocket para eventos en tiempo real"
+    },
+    {
+      "_id": "req_ws_connect",
+      "_type": "request",
+      "parentId": "fld_websocket",
+      "name": "GET - WebSocket Connection",
+      "description": "Conecta a WebSocket para recibir eventos en tiempo real. Reemplaza <token> con tu JWT",
+      "method": "GET",
+      "url": "ws://{{ _.base_url }}/ws?token=PASTE_JWT_TOKEN_HERE",
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": 1,
+      "isPrivate": false
     }
   ]
 }
