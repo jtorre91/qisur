@@ -13,8 +13,9 @@
 
 ```bash
 # Clonar
-git clone <repo>
-cd qisurChallenge
+mkdir qisur
+git clone https://github.com/jtorre91/qisur
+cd cd qisur
 
 # Descargar dependencias
 go mod download
