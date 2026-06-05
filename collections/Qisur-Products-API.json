@@ -300,6 +300,67 @@
       "authentication": {},
       "metaSortKey": 7,
       "isPrivate": false
+    },
+    {
+      "_id": "fld_search",
+      "_type": "request_group",
+      "parentId": "wrk_qisur",
+      "name": "🔍 Search",
+      "description": "Endpoints de búsqueda, filtros y ordenamiento"
+    },
+    {
+      "_id": "req_search_products",
+      "_type": "request",
+      "parentId": "fld_search",
+      "name": "GET - Search products",
+      "description": "Busca productos con filtros, ordenamiento y paginación",
+      "method": "GET",
+      "url": "{{ _.api_url }}/search?type=product&q=laptop&min_price=500&max_price=2000&sort_by=price&order=ASC&page=1&limit=10",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 1,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_search_products_simple",
+      "_type": "request",
+      "parentId": "fld_search",
+      "name": "GET - Search products (simple)",
+      "description": "Búsqueda simple de productos por texto",
+      "method": "GET",
+      "url": "{{ _.api_url }}/search?type=product&q=cable&page=1&limit=10",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 2,
+      "isPrivate": false
+    },
+    {
+      "_id": "req_search_categories",
+      "_type": "request",
+      "parentId": "fld_search",
+      "name": "GET - Search categories",
+      "description": "Busca categorías con filtros y ordenamiento",
+      "method": "GET",
+      "url": "{{ _.api_url }}/search?type=category&q=electr&sort_by=name&order=ASC&page=1&limit=10",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": 3,
+      "isPrivate": false
     }
   ]
 }

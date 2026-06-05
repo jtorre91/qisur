@@ -11,10 +11,12 @@ func New(pool *pgxpool.Pool) chi.Router {
 	// Initialize repositories
 	categoryRepo := repository.NewCategoryRepository(pool)
 	productRepo := repository.NewProductRepository(pool)
+	searchRepo := repository.NewSearchRepository(pool)
 
 	// Initialize handlers
 	categoryHandler := handlers.NewCategoryHandler(categoryRepo)
 	productHandler := handlers.NewProductHandler(productRepo)
+	searchHandler := handlers.NewSearchHandler(searchRepo)
 
 	// Setup router
 	router := chi.NewRouter()
@@ -40,6 +42,9 @@ func New(pool *pgxpool.Pool) chi.Router {
 		r.Delete("/{id}", productHandler.Delete)
 		r.Get("/{id}/history", productHandler.GetHistory)
 	})
+
+	// Search routes
+	router.Get("/api/search", searchHandler.Search)
 
 	return router
 }

@@ -25,7 +25,10 @@ Qisur Products API/
 │   ├── DELETE - Delete product
 │   └── GET - Product history
 ├── 🔐 Auth (próximamente)
-├── 🔍 Search (próximamente)
+├── 🔍 Search
+│   ├── GET - Search products (completo con filtros)
+│   ├── GET - Search products (simple)
+│   └── GET - Search categories
 └── Base Environment (variables)
 ```
 
@@ -148,6 +151,53 @@ GET /api/products/{id}/history?start=2026-06-01&end=2026-06-04&limit=10&offset=0
 
 **Nota:** Las fechas se buscan sin considerar horas/minutos/segundos. 
 Si pones `start=2026-06-01` y `end=2026-06-04`, busca todos los cambios ocurridos en esos días completos.
+
+### Buscar productos
+
+**Con todos los filtros:**
+```
+GET /api/search?type=product&q=laptop&min_price=500&max_price=2000&sort_by=price&order=ASC&page=1&limit=10
+```
+
+**Búsqueda simple:**
+```
+GET /api/search?type=product&q=cable&page=1&limit=10
+```
+
+**Parámetros de búsqueda de productos:**
+- `type=product` — requerido
+- `q` — texto a buscar en nombre y descripción (opcional)
+- `min_price` — precio mínimo (opcional)
+- `max_price` — precio máximo (opcional)
+- `sort_by` — campo para ordenar: `name`, `price`, `stock`, `created_at` (default: `created_at`)
+- `order` — `ASC` o `DESC` (default: `DESC`)
+- `page` — número de página (default: 1)
+- `limit` — resultados por página, máximo 100 (default: 10)
+
+### Buscar categorías
+
+```
+GET /api/search?type=category&q=electr&sort_by=name&order=ASC&page=1&limit=10
+```
+
+**Parámetros de búsqueda de categorías:**
+- `type=category` — requerido
+- `q` — texto a buscar en nombre y descripción (opcional)
+- `sort_by` — campo para ordenar: `name`, `created_at` (default: `created_at`)
+- `order` — `ASC` o `DESC` (default: `DESC`)
+- `page` — número de página (default: 1)
+- `limit` — resultados por página, máximo 100 (default: 10)
+
+**Respuesta de búsqueda:**
+```json
+{
+  "items": [ ... ],
+  "total": 45,
+  "page": 1,
+  "limit": 10,
+  "total_pages": 5
+}
+```
 
 ## Notas
 

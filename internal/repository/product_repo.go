@@ -161,10 +161,6 @@ func (r *ProductRepository) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 func (r *ProductRepository) GetHistory(ctx context.Context, productID uuid.UUID, startDate *string, endDate *string, limit int, offset int) ([]models.ProductHistory, error) {
-	if limit == 0 {
-		limit = 10
-	}
-
 	query := `
 		SELECT id, product_id, price, stock, changed_at
 		FROM product_history
@@ -195,7 +191,7 @@ func (r *ProductRepository) GetHistory(ctx context.Context, productID uuid.UUID,
 	}
 	defer rows.Close()
 
-	var history []models.ProductHistory
+	history := make([]models.ProductHistory, 0)
 	for rows.Next() {
 		var h models.ProductHistory
 		err := rows.Scan(&h.ID, &h.ProductID, &h.Price, &h.Stock, &h.ChangedAt)

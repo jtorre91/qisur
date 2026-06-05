@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -173,31 +172,11 @@ func (h *ProductHandler) GetHistory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract pagination parameters
-	limit := 10
-	offset := 0
-
-	if l := r.URL.Query().Get("limit"); l != "" {
-		if parsed, err := strconv.Atoi(l); err == nil && parsed > 0 {
-			limit = parsed
-		}
-	}
-	if o := r.URL.Query().Get("offset"); o != "" {
-		if parsed, err := strconv.Atoi(o); err == nil && parsed >= 0 {
-			offset = parsed
-		}
-	}
-
-	// Extract date range parameters (format: YYYY-MM-DD)
-	var startDate *string
-	var endDate *string
-
-	if start := r.URL.Query().Get("start"); start != "" {
-		startDate = &start
-	}
-	if end := r.URL.Query().Get("end"); end != "" {
-		endDate = &end
-	}
+	page := ExtractPageParam(r)
+	limit := ExtractLimitParam(r)
+	offset := ExtractOffsetFromPage(page, limit)
+	startDate := ExtractStartDateParam(r)
+	endDate := ExtractEndDateParam(r)
 
 	history, err := h.repo.GetHistory(r.Context(), id, startDate, endDate, limit, offset)
 	if err != nil {

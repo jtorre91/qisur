@@ -209,6 +209,14 @@ func Run(pool *pgxpool.Pool) error {
 			return fmt.Errorf("failed to insert product: %w", err)
 		}
 
+		_, err = pool.Exec(ctx, `
+			INSERT INTO product_history (product_id, price, stock)
+			VALUES ($1, $2, $3)
+		`, prodID, prod.price, prod.stock)
+		if err != nil {
+			return fmt.Errorf("failed to insert product history: %w", err)
+		}
+
 		// Insert product-category
 		for _, catID := range prod.cats {
 			_, err := pool.Exec(ctx, `
