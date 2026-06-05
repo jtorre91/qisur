@@ -15,17 +15,19 @@ type ProductHandler struct {
 }
 
 type CreateProductRequest struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float64 `json:"price"`
-	Stock       int     `json:"stock"`
+	Name          string      `json:"name"`
+	Description   string      `json:"description"`
+	Price         float64     `json:"price"`
+	Stock         int         `json:"stock"`
+	CategoryIDs   []uuid.UUID `json:"category_ids"`
 }
 
 type UpdateProductRequest struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float64 `json:"price"`
-	Stock       int     `json:"stock"`
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	Price       float64     `json:"price"`
+	Stock       int         `json:"stock"`
+	CategoryIDs []uuid.UUID `json:"category_ids"`
 }
 
 func NewProductHandler(repo *repository.ProductRepository) *ProductHandler {
@@ -83,6 +85,18 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(req.CategoryIDs) == 0 {
+		http.Error(w, "at least one category is required", http.StatusBadRequest)
+		return
+	}
+
+	for _, catID := range req.CategoryIDs {
+		if catID == uuid.Nil {
+			http.Error(w, "invalid category id", http.StatusBadRequest)
+			return
+		}
+	}
+
 	prod := &models.Product{
 		Name:        req.Name,
 		Description: req.Description,
@@ -90,7 +104,7 @@ func (h *ProductHandler) Create(w http.ResponseWriter, r *http.Request) {
 		Stock:       req.Stock,
 	}
 
-	created, err := h.repo.Create(r.Context(), prod)
+	created, err := h.repo.Create(r.Context(), prod, req.CategoryIDs)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -130,6 +144,15 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(req.CategoryIDs) > 0 {
+		for _, catID := range req.CategoryIDs {
+			if catID == uuid.Nil {
+				http.Error(w, "invalid category id", http.StatusBadRequest)
+				return
+			}
+		}
+	}
+
 	prod := &models.Product{
 		Name:        req.Name,
 		Description: req.Description,
@@ -137,7 +160,7 @@ func (h *ProductHandler) Update(w http.ResponseWriter, r *http.Request) {
 		Stock:       req.Stock,
 	}
 
-	updated, err := h.repo.Update(r.Context(), id, prod)
+	updated, err := h.repo.Update(r.Context(), id, prod, req.CategoryIDs)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return

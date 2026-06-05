@@ -219,7 +219,7 @@
       ],
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"name\": \"Laptop Dell XPS 13\",\n  \"description\": \"Laptop ultraligera con pantalla OLED\",\n  \"price\": 1299.99,\n  \"stock\": 15\n}"
+        "text": "{\n  \"name\": \"Laptop Dell XPS 13\",\n  \"description\": \"Laptop ultraligera con pantalla OLED\",\n  \"price\": 1299.99,\n  \"stock\": 15,\n  \"category_ids\": [\"PASTE_CATEGORY_ID_HERE\"]\n}"
       },
       "authentication": {},
       "metaSortKey": 3,
@@ -241,7 +241,7 @@
       ],
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"name\": \"Laptop Dell XPS 13 Plus\",\n  \"description\": \"Laptop ultraligera con pantalla OLED - modelo mejorado\",\n  \"price\": 1399.99,\n  \"stock\": 12\n}"
+        "text": "{\n  \"name\": \"Laptop Dell XPS 13 Plus\",\n  \"description\": \"Laptop ultraligera con pantalla OLED - modelo mejorado\",\n  \"price\": 1399.99,\n  \"stock\": 12,\n  \"category_ids\": [\"PASTE_CATEGORY_ID_HERE\"]\n}"
       },
       "authentication": {},
       "metaSortKey": 4,

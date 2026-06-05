@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jtorre/qisurChallenge/internal/models"
 )
@@ -15,6 +16,99 @@ type ProductRepository struct {
 
 func NewProductRepository(pool *pgxpool.Pool) *ProductRepository {
 	return &ProductRepository{pool: pool}
+}
+
+func difference(a, b []uuid.UUID) []uuid.UUID {
+	var result []uuid.UUID
+	for _, aVal := range a {
+		found := false
+		for _, bVal := range b {
+			if aVal == bVal {
+				found = true
+				break
+			}
+		}
+		if !found {
+			result = append(result, aVal)
+		}
+	}
+	return result
+}
+
+func (r *ProductRepository) getCurrentCategories(ctx context.Context, tx pgx.Tx, productID uuid.UUID) ([]uuid.UUID, error) {
+	rows, err := tx.Query(ctx, `SELECT category_id FROM product_category WHERE product_id = $1`, productID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch current categories: %w", err)
+	}
+	defer rows.Close()
+
+	var categoryIDs []uuid.UUID
+	for rows.Next() {
+		var catID uuid.UUID
+		if err := rows.Scan(&catID); err != nil {
+			return nil, fmt.Errorf("failed to scan category: %w", err)
+		}
+		categoryIDs = append(categoryIDs, catID)
+	}
+	return categoryIDs, nil
+}
+
+func (r *ProductRepository) categoryExists(ctx context.Context, tx pgx.Tx, categoryID uuid.UUID) (bool, error) {
+	var exists bool
+	err := tx.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM categories WHERE id = $1)`, categoryID).Scan(&exists)
+	return exists, err
+}
+
+func (r *ProductRepository) linkCategories(ctx context.Context, tx pgx.Tx, productID uuid.UUID, categoryIDs []uuid.UUID) error {
+	for _, categoryID := range categoryIDs {
+		exists, err := r.categoryExists(ctx, tx, categoryID)
+		if err != nil {
+			return fmt.Errorf("failed to verify category: %w", err)
+		}
+		if !exists {
+			return fmt.Errorf("categoría inválida, no existe")
+		}
+
+		_, err = tx.Exec(ctx, `INSERT INTO product_category (product_id, category_id) VALUES ($1, $2)`, productID, categoryID)
+		if err != nil {
+			return fmt.Errorf("failed to link category: %w", err)
+		}
+	}
+	return nil
+}
+
+func (r *ProductRepository) unlinkCategories(ctx context.Context, tx pgx.Tx, productID uuid.UUID, categoryIDs []uuid.UUID) error {
+	for _, categoryID := range categoryIDs {
+		_, err := tx.Exec(ctx, `DELETE FROM product_category WHERE product_id = $1 AND category_id = $2`, productID, categoryID)
+		if err != nil {
+			return fmt.Errorf("failed to delete category: %w", err)
+		}
+	}
+	return nil
+}
+
+func (r *ProductRepository) updateCategories(ctx context.Context, tx pgx.Tx, productID uuid.UUID, newCategoryIDs []uuid.UUID) error {
+	oldCategoryIDs, err := r.getCurrentCategories(ctx, tx, productID)
+	if err != nil {
+		return err
+	}
+
+	toDelete := difference(oldCategoryIDs, newCategoryIDs)
+	toInsert := difference(newCategoryIDs, oldCategoryIDs)
+
+	if len(toDelete) > 0 {
+		if err := r.unlinkCategories(ctx, tx, productID, toDelete); err != nil {
+			return err
+		}
+	}
+
+	if len(toInsert) > 0 {
+		if err := r.linkCategories(ctx, tx, productID, toInsert); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (r *ProductRepository) List(ctx context.Context) ([]models.Product, error) {
@@ -56,7 +150,7 @@ func (r *ProductRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.
 	return &prod, nil
 }
 
-func (r *ProductRepository) Create(ctx context.Context, prod *models.Product) (*models.Product, error) {
+func (r *ProductRepository) Create(ctx context.Context, prod *models.Product, categoryIDs []uuid.UUID) (*models.Product, error) {
 	tx, err := r.pool.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
@@ -77,13 +171,16 @@ func (r *ProductRepository) Create(ctx context.Context, prod *models.Product) (*
 		return nil, fmt.Errorf("failed to create product: %w", err)
 	}
 
-	// Insert into product_history for initial record
 	_, err = tx.Exec(ctx, `
 		INSERT INTO product_history (product_id, price, stock)
 		VALUES ($1, $2, $3)
 	`, prod.ID, prod.Price, prod.Stock)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create product history: %w", err)
+	}
+
+	if err := r.linkCategories(ctx, tx, prod.ID, categoryIDs); err != nil {
+		return nil, err
 	}
 
 	err = tx.Commit(ctx)
@@ -94,7 +191,7 @@ func (r *ProductRepository) Create(ctx context.Context, prod *models.Product) (*
 	return prod, nil
 }
 
-func (r *ProductRepository) Update(ctx context.Context, id uuid.UUID, prod *models.Product) (*models.Product, error) {
+func (r *ProductRepository) Update(ctx context.Context, id uuid.UUID, prod *models.Product, categoryIDs []uuid.UUID) (*models.Product, error) {
 	tx, err := r.pool.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start transaction: %w", err)
@@ -111,7 +208,6 @@ func (r *ProductRepository) Update(ctx context.Context, id uuid.UUID, prod *mode
 		return nil, fmt.Errorf("product not found: %w", err)
 	}
 
-	// Update product
 	err = tx.QueryRow(ctx, `
 		UPDATE products
 		SET name = $1, description = $2, price = $3, stock = $4, updated_at = now()
@@ -134,6 +230,10 @@ func (r *ProductRepository) Update(ctx context.Context, id uuid.UUID, prod *mode
 		if err != nil {
 			return nil, fmt.Errorf("failed to create product history: %w", err)
 		}
+	}
+
+	if err := r.updateCategories(ctx, tx, id, categoryIDs); err != nil {
+		return nil, err
 	}
 
 	err = tx.Commit(ctx)

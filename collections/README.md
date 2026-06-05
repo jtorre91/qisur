@@ -102,7 +102,7 @@ Content-Type: application/json
 }
 ```
 
-### Crear un producto
+### Crear un producto (con categorías)
 ```json
 POST /api/products
 Content-Type: application/json
@@ -111,11 +111,19 @@ Content-Type: application/json
   "name": "Laptop Dell XPS 13",
   "description": "Laptop ultraligera con pantalla OLED",
   "price": 1299.99,
-  "stock": 15
+  "stock": 15,
+  "category_ids": ["015649b-f1c6-461f-8a01-da4dedc108f4", "550e8400-e29b-41d4-a716-446655440000"]
 }
 ```
 
-### Actualizar un producto (registra cambios en historial)
+**Nota sobre `category_ids`:**
+- Campo requerido: sí
+- Debe ser un array de UUID válidos
+- Cada UUID debe corresponder a una categoría existente
+- Si la categoría no existe, recibirás error: `"categoría inválida, no existe"`
+- Puedes obtener los IDs de categorías con `GET /api/categories`
+
+### Actualizar un producto (con categorías)
 ```json
 PUT /api/products/{id}
 Content-Type: application/json
@@ -124,12 +132,17 @@ Content-Type: application/json
   "name": "Laptop Dell XPS 13 Plus",
   "description": "Laptop ultraligera con pantalla OLED - modelo mejorado",
   "price": 1399.99,
-  "stock": 12
+  "stock": 12,
+  "category_ids": ["015649b-f1c6-461f-8a01-da4dedc108f4"]
 }
 ```
 
-**Nota:** Las categorías de un producto se gestionar mediante la tabla intermedia `product_category`. 
-Para esta fase, los productos se crean sin categorías.
+**Nota sobre actualización de categorías:**
+- Si envías `category_ids`, se actualiza la relación N:M
+- Las categorías se reemplazan completamente (no se agregan, se reemplazan)
+- Si solo cambió 1 categoría de 10, solo esa se actualiza (optimizado con diff)
+- Si la categoría no existe, devuelve error con el mensaje: `"categoría inválida, no existe"`
+- Los cambios en precio/stock se registran en el historial automáticamente
 
 ### Obtener historial de cambios de un producto
 
