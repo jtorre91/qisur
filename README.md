@@ -13,17 +13,32 @@
 
 ```bash
 # Clonar
-mkdir qisur
 git clone https://github.com/jtorre91/qisur
-cd cd qisur
+cd qisur
 
 # Descargar dependencias
 go mod download
 
+
+# Crear .env en la raiz del proyecto (pueden copiar directamente el env.example)
+
+# Database
+DATABASE_URL=postgres://qisur:qisur@localhost:5433/qisur_db
+
+# JWT
+JWT_SECRET=change-me-in-production
+JWT_EXPIRATION_HOURS=24
+
+# Server
+PORT=8080
+
+# Populate datos de prueba
+SEED=True
+
 # Levantar PostgreSQL
 docker-compose up -d postgres
 
-# Ejecutar servidor
+# Ejecutar servidor (puede tardar unos minutos la 1ra vez)
 go run ./cmd/server
 ```
 
@@ -69,6 +84,31 @@ El servidor inicia en `http://localhost:8080`
 - **golang-jwt** — Autenticación JWT
 - **Swagger** — Documentación API
 
+## 📂 Estructura del Proyecto
+
+```
+qisur/
+├── cmd/server/              # Punto de entrada
+├── internal/
+│   ├── auth/               # Autenticación JWT
+│   ├── config/             # Configuración
+│   ├── db/                 # PostgreSQL + migrations
+│   ├── handlers/           # HTTP handlers
+│   ├── middleware/         # Auth + Role guards
+│   ├── models/             # Data structures
+│   ├── repository/         # Data access
+│   ├── router/             # Rutas
+│   ├── utils/              # Helpers
+│   └── ws/                 # WebSocket hub + client
+├── docs/                   # Documentación
+├── collections/            # Insomnia collection
+├── seeds/                  # Test data
+├── docker-compose.yml
+├── Dockerfile
+├── go.mod
+└── README.md
+```
+
 ## 🏗️ Arquitectura
 
 ```
@@ -93,25 +133,6 @@ Cliente conecta → WS upgrades → Hub registra cliente
                           POST/PUT/DELETE en REST
                                       ↓
                       hub.Broadcast() → todos reciben evento
-```
-
-## 🔧 Configuración
-
-### Variables de entorno (.env)
-
-```ini
-# Database
-DATABASE_URL=postgres://qisur:qisur@localhost:5433/qisur_db
-
-# JWT
-JWT_SECRET=change-me-in-production
-JWT_EXPIRATION_HOURS=24
-
-# Server
-PORT=8080
-
-# Populate datos de prueba
-SEED=false
 ```
 
 ## 📝 Ejemplos
@@ -150,31 +171,6 @@ ws.onmessage = (event) => {
   const { event, data } = JSON.parse(event.data);
   console.log(`Evento: ${event}`, data);
 };
-```
-
-## 📂 Estructura del Proyecto
-
-```
-qisurChallenge/
-├── cmd/server/              # Punto de entrada
-├── internal/
-│   ├── auth/               # Autenticación JWT
-│   ├── config/             # Configuración
-│   ├── db/                 # PostgreSQL + migrations
-│   ├── handlers/           # HTTP handlers
-│   ├── middleware/         # Auth + Role guards
-│   ├── models/             # Data structures
-│   ├── repository/         # Data access
-│   ├── router/             # Rutas
-│   ├── utils/              # Helpers
-│   └── ws/                 # WebSocket hub + client
-├── docs/                   # Documentación
-├── collections/            # Insomnia collection
-├── seeds/                  # Test data
-├── docker-compose.yml
-├── Dockerfile
-├── go.mod
-└── README.md
 ```
 
 ## 🧪 Testing
